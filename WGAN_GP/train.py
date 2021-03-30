@@ -20,7 +20,7 @@ IMAGE_SIZE = 64
 CHANNELS_IMG = 1
 Z_DIM = 100 # Noise_dim
 NUM_EPOCHS = 5
-FEATURES_DISC = 64
+FEATURES_CRITIC = 64
 FEATURES_GEN = 64
 
 
@@ -41,7 +41,7 @@ transforms = transforms.Compose(
 dataset = datasets.MNIST(root=r'C:\Users\hanch\PycharmProjects\GAN_origin\dataset', train=True, transform=transforms, download=True)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
-critic = Critic(CHANNELS_IMG, FEATURES_DISC).to(device)
+critic = Critic(CHANNELS_IMG, FEATURES_CRITIC).to(device)
 initialize_weights(gen)
 initialize_weights(critic)
 
@@ -62,6 +62,8 @@ for epoch in range(NUM_EPOCHS):
         real = real.to(device)
         cur_batch_size = real.shape[0]
 
+        # Train Critic: max E[critic(real)] - E[critic(fake)]
+        # which is equivalent to minimizing the negative of the above form
         for _ in range(CRITIC_ITERATIONS):
             noise = torch.randn((cur_batch_size, Z_DIM, 1, 1)).to(device)
             fake = gen(noise)
@@ -80,7 +82,7 @@ for epoch in range(NUM_EPOCHS):
 
         # We are not using clip right now, we use gradient penalty instead.
 
-        #Train Generator: min E[critic(gen_fake)]
+        #Train Generator: max E[critic(gen_fake)] == min -E[critic(gen_fake)]
         output = critic(fake).reshape(-1)
         loss_gen = -torch.mean(output)
         gen.zero_grad()
