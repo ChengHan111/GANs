@@ -142,6 +142,7 @@ cython_debug/
 #input data
 input/
 models/
+dataset/
 
 
 # data files
