@@ -19,14 +19,17 @@ BATCH_SIZE = 128
 IMAGE_SIZE = 64
 CHANNELS_IMG = 1
 Z_DIM = 100 # Noise_dim
-NUM_EPOCHS = 5
+NUM_EPOCHS = 15
 FEATURES_DISC = 64
 FEATURES_GEN = 64
+CRITIC_ITERATIONS = 5
+LAMBDA_GP = 10
 
 
 # NEW ADDED
-CRITIC_ITERATIONS = 5
-LAMBDA_GP = 10
+NUM_CLASSES = 10
+GEN_EMBEDDING = 100
+
 
 transforms = transforms.Compose(
     [
@@ -40,8 +43,8 @@ transforms = transforms.Compose(
 
 dataset = datasets.MNIST(root=r'C:\Users\hanch\PycharmProjects\GAN_origin\dataset', train=True, transform=transforms, download=True)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
-gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
-critic = Critic(CHANNELS_IMG, FEATURES_DISC).to(device)
+gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN, NUM_CLASSES, IMAGE_SIZE, GEN_EMBEDDING).to(device)
+critic = Critic(CHANNELS_IMG, FEATURES_DISC, NUM_CLASSES, IMAGE_SIZE).to(device)
 initialize_weights(gen)
 initialize_weights(critic)
 
@@ -58,18 +61,18 @@ gen.train()
 critic.train()
 
 for epoch in range(NUM_EPOCHS):
-    for batch_idx, (real, _) in enumerate(dataloader):
+    for batch_idx, (real, labels) in enumerate(dataloader):
         real = real.to(device)
-        noise = torch.randn((BATCH_SIZE, Z_DIM, 1, 1)).to(device)
-        fake = gen(noise)
+        cur_batch_size = real.shape[0]
+        labels = labels.to(device)
 
         for _ in range(CRITIC_ITERATIONS):
             noise = torch.randn((BATCH_SIZE, Z_DIM, 1, 1)).to(device)
             fake = gen(noise)
-            critic_real = critic(real).reshape(-1)
-            critic_fake = critic(fake).reshape(-1)
+            critic_real = critic(real, labels).reshape(-1)
+            critic_fake = critic(fake, labels).reshape(-1)
             # New added
-            gp = gradient_penalty(critic, real, fake, device=device)
+            gp = gradient_penalty(critic, labels, real, fake, device=device)
 
             # original loss + lambda * gp
             loss_critic = (
@@ -82,7 +85,7 @@ for epoch in range(NUM_EPOCHS):
         # We are not using clip right now, we use gradient penalty instead.
 
         #Train Generator: min E[critic(gen_fake)]
-        output = critic(fake).reshape(-1)
+        output = critic(fake, labels).reshape(-1)
         loss_gen = -torch.mean(output)
         gen.zero_grad()
         loss_gen.backward()
@@ -96,7 +99,7 @@ for epoch in range(NUM_EPOCHS):
             )
 
             with torch.no_grad():
-                fake = gen(fixed_noise)
+                fake = gen(noise, labels)
                 # take out (up to) 32 examples
                 img_grid_real = torchvision.utils.make_grid(
                     real[:32], normalize=True

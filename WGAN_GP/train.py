@@ -9,11 +9,12 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from model import Critic, Generator, initialize_weights
+from utils import gradient_penalty
 
 
 # Hyper-para
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-LEARNING_RATE = 2e-4
+LEARNING_RATE = 1e-4
 BATCH_SIZE = 128
 IMAGE_SIZE = 64
 CHANNELS_IMG = 1
@@ -22,9 +23,10 @@ NUM_EPOCHS = 5
 FEATURES_DISC = 64
 FEATURES_GEN = 64
 
+
 # NEW ADDED
 CRITIC_ITERATIONS = 5
-WEIGHT_CLIP = 0.01
+LAMBDA_GP = 10
 
 transforms = transforms.Compose(
     [
@@ -44,8 +46,8 @@ initialize_weights(gen)
 initialize_weights(critic)
 
 # change into RMSprop instead of Adam
-opt_gen = optim.RMSprop(gen.parameters(), lr=LEARNING_RATE)
-opt_critic = optim.RMSprop(critic.parameters(), lr=LEARNING_RATE)
+opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.0,0.9))
+opt_critic = optim.Adam(critic.parameters(), lr=LEARNING_RATE, betas=(0.0,0.9))
 
 fixed_noise = torch.randn((32, Z_DIM, 1, 1)).to(device)
 writer_real = SummaryWriter(f'logs/real')
@@ -65,13 +67,18 @@ for epoch in range(NUM_EPOCHS):
             fake = gen(noise)
             critic_real = critic(real).reshape(-1)
             critic_fake = critic(fake).reshape(-1)
-            loss_critic = -(torch.mean(critic_real) - torch.mean(critic_fake))
+            # New added
+            gp = gradient_penalty(critic, real, fake, device=device)
+
+            # original loss + lambda * gp
+            loss_critic = (
+                -(torch.mean(critic_real) - torch.mean(critic_fake)) + LAMBDA_GP * gp
+            )
             critic.zero_grad()
             loss_critic.backward(retain_graph=True)
             opt_critic.step()
 
-            for p in critic.parameters():
-                p.data.clamp(-WEIGHT_CLIP, WEIGHT_CLIP)
+        # We are not using clip right now, we use gradient penalty instead.
 
         #Train Generator: min E[critic(gen_fake)]
         output = critic(fake).reshape(-1)
