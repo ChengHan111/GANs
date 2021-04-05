@@ -20,3 +20,4 @@ layers is big, or batch normalization is not used.
 ## Conditional WGAN_GP
 From the result of conditional WGAN_GP, we can see that every sample on fake and real are paired,
 meaning that we can generate fake image from specific real image.
+## Pix2Pix
