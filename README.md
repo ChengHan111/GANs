@@ -15,11 +15,17 @@ In this approach, the author clamps the weights to a fixed box after each gradie
 However, weight clipping is clearly a terrible way to enforce a Lipschitz constraints. If the clipping parameter is large,
 then it can take a long time for any weights to reach their limits, thereby making it harder to train the critic till optimality.
 If the clipping is small, this can easily lead to vanishing gradients when the number of 
-layers is big, or batch normalization is not used. 
+layers is big, or batch normalization is not used. (In another word, WGAN requires that the discriminator (called the critic) must lie within the space of 1-Lipschitz functions, which the authors enforce through weight clipping.)
 ## WGAN_GP
 WGAN sometimes can still generate poor samples or fail to converge. The reason is often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic.
 An alternative way to clipping weights is mentioned in WGAN_GP paper. (Penalize the norm of the critic with respect to its input.)
+A soft version of the constraint with a penalty on the gradient norm for random samples.
+
+No critic batch normalization is applied since the authors penalize the norm of the critic's gradient with respect to each input independently, and not the entire batch.
+
+Using WGAN_GP, a strong modeling performance and stability can be reached across a variety of architectures.
 ## Conditional WGAN_GP
 From the result of conditional WGAN_GP, we can see that every sample on fake and real are paired,
-meaning that we can generate fake image from specific real image.
+meaning that we can generate fake image from specific real image. Generative adversarial nets can be extended to a conditional model if both the generator and discriminator are 
+conditioned on some extra information y.
 ## Pix2Pix
