@@ -9,7 +9,7 @@ class Critic(nn.Module):
         self.img_size = img_size
         self.disc = nn.Sequential(
             # Input : N x channels_img x 64 x 64
-            # In the following Conv2d input we give info on the label
+            # In the following Conv2d input we give info on the label, additional channel
             nn.Conv2d(
             channels_img + 1, features_d, kernel_size=4, stride=2, padding=1
             ), # 32 x 32
@@ -39,9 +39,9 @@ class Critic(nn.Module):
             nn.LeakyReLU(0.2),
         )
 
-    def forward(self,x, labels):
-        embedding = self.imbed(labels).view(labels.shape[0], 1, self.img_size, self.img_size)
-        x = torch.cat([x, embedding], dim=1) # N x C x img_size(H) x img_size(W)
+    def forward(self, x, labels):
+        embedding = self.embed(labels).view(labels.shape[0], 1, self.img_size, self.img_size)  #add an additional channel
+        x = torch.cat([x, embedding], dim=1)  # N x C x img_size(H) x img_size(W)
         return self.disc(x)
 
 class Generator(nn.Module):
@@ -85,7 +85,7 @@ class Generator(nn.Module):
 
     def forward(self, x, labels):
         # latent vector z: N x noise_dim x 1 x 1
-        embedding = self.embed(labels).unsqueeze(2).unsqueeze(3)
+        embedding = self.embed(labels).unsqueeze(2).unsqueeze(3) # unsqueeze twice for x1, x1 at the end
         x = torch.cat([x, embedding], dim=1)
         return self.gen(x)
 
@@ -100,7 +100,7 @@ def test():
     N, in_channels, H, W = 8, 3, 64, 64
     z_dim = 100
     x = torch.randn((N, in_channels, H, W))
-    disc = Discriminator(in_channels, 8)
+    disc = Critic(in_channels, 8)
     initialize_weights(disc)
     assert disc(x).shape == (N, 1, 1, 1)
     gen = Generator(z_dim, in_channels, 8)

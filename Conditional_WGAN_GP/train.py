@@ -1,4 +1,4 @@
-'''Training for DCGAN on MNIST dataset with Discriminator and Generator imported from model.py'''
+'''Training for Conditional GAN on MNIST dataset with Discriminator and Generator imported from model.py'''
 
 import torch
 import torch.nn as nn
@@ -15,11 +15,11 @@ from utils import gradient_penalty
 # Hyper-para
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 LEARNING_RATE = 1e-4
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 IMAGE_SIZE = 64
 CHANNELS_IMG = 1
 Z_DIM = 100 # Noise_dim
-NUM_EPOCHS = 15
+NUM_EPOCHS = 100
 FEATURES_DISC = 64
 FEATURES_GEN = 64
 CRITIC_ITERATIONS = 5
@@ -49,8 +49,8 @@ initialize_weights(gen)
 initialize_weights(critic)
 
 # change into RMSprop instead of Adam
-opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.0,0.9))
-opt_critic = optim.Adam(critic.parameters(), lr=LEARNING_RATE, betas=(0.0,0.9))
+opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
+opt_critic = optim.Adam(critic.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
 
 fixed_noise = torch.randn((32, Z_DIM, 1, 1)).to(device)
 writer_real = SummaryWriter(f'logs/real')
@@ -61,6 +61,7 @@ gen.train()
 critic.train()
 
 for epoch in range(NUM_EPOCHS):
+    # We now need labels.
     for batch_idx, (real, labels) in enumerate(dataloader):
         real = real.to(device)
         cur_batch_size = real.shape[0]
@@ -68,7 +69,7 @@ for epoch in range(NUM_EPOCHS):
 
         for _ in range(CRITIC_ITERATIONS):
             noise = torch.randn((BATCH_SIZE, Z_DIM, 1, 1)).to(device)
-            fake = gen(noise)
+            fake = gen(noise, labels)
             critic_real = critic(real, labels).reshape(-1)
             critic_fake = critic(fake, labels).reshape(-1)
             # New added
@@ -84,7 +85,7 @@ for epoch in range(NUM_EPOCHS):
 
         # We are not using clip right now, we use gradient penalty instead.
 
-        #Train Generator: min E[critic(gen_fake)]
+        #Train Generator: min -E[critic(gen_fake)]
         output = critic(fake, labels).reshape(-1)
         loss_gen = -torch.mean(output)
         gen.zero_grad()
