@@ -17,6 +17,8 @@ then it can take a long time for any weights to reach their limits, thereby maki
 If the clipping is small, this can easily lead to vanishing gradients when the number of 
 layers is big, or batch normalization is not used. 
 ## WGAN_GP
+WGAN sometimes can still generate poor samples or fail to converge. The reason is often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic.
+An alternative way to clipping weights is mentioned in WGAN_GP paper. (Penalize the norm of the critic with respect to its input.)
 ## Conditional WGAN_GP
 From the result of conditional WGAN_GP, we can see that every sample on fake and real are paired,
 meaning that we can generate fake image from specific real image.
