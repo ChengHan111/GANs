@@ -1,4 +1,4 @@
-'''Discriminator and Generator'''
+'''Critic and Generator'''
 
 import torch
 import torch.nn as nn
@@ -30,12 +30,12 @@ class Critic(nn.Module):
                 padding,
                 bias=False,
                       ),
-            # In the paper we are applying layerNorm but now we are applying instanceNorm,since it does not normalize across the batches
-            nn.InstanceNorm2d(out_channels,affine=True),
+            # In the paper we are applying layerNorm but now we are applying instanceNorm, since it does not normalize across the batches
+            nn.InstanceNorm2d(out_channels, affine=True),
             nn.LeakyReLU(0.2),
         )
 
-    def forward(self,x):
+    def forward(self, x):
         return self.disc(x)
 
 class Generator(nn.Module):
@@ -81,7 +81,7 @@ def test():
     N, in_channels, H, W = 8, 3, 64, 64
     z_dim = 100
     x = torch.randn((N, in_channels, H, W))
-    disc = Discriminator(in_channels, 8)
+    disc = Critic(in_channels, 8)
     initialize_weights(disc)
     assert disc(x).shape == (N, 1, 1, 1)
     gen = Generator(z_dim, in_channels, 8)

@@ -18,6 +18,6 @@ def gradient_penalty(critic, real, fake, device='cpu'):
     )[0]
 
     gradient = gradient.view(gradient.shape[0], -1)
-    gradient_norm = gradient.norm(2, dim=1) #we are taking L2 norm
+    gradient_norm = gradient.norm(2, dim=1)  # we are taking L2 norm
     gradient_penalty = torch.mean((gradient_norm - 1) ** 2)
     return gradient_penalty

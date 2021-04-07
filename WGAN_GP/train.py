@@ -1,4 +1,4 @@
-'''Training for DCGAN on MNIST dataset with Discriminator and Generator imported from model.py'''
+'''Training for WGAN_GP (gradient penalty) on MNIST dataset with Discriminator and Generator imported from model.py'''
 
 import torch
 import torch.nn as nn
@@ -22,10 +22,10 @@ Z_DIM = 100 # Noise_dim
 NUM_EPOCHS = 5
 FEATURES_CRITIC = 64
 FEATURES_GEN = 64
-
-
-# NEW ADDED
 CRITIC_ITERATIONS = 5
+
+
+# NEW ADDED para
 LAMBDA_GP = 10
 
 transforms = transforms.Compose(
@@ -45,9 +45,8 @@ critic = Critic(CHANNELS_IMG, FEATURES_CRITIC).to(device)
 initialize_weights(gen)
 initialize_weights(critic)
 
-# change into RMSprop instead of Adam
-opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.0,0.9))
-opt_critic = optim.Adam(critic.parameters(), lr=LEARNING_RATE, betas=(0.0,0.9))
+opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
+opt_critic = optim.Adam(critic.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
 
 fixed_noise = torch.randn((32, Z_DIM, 1, 1)).to(device)
 writer_real = SummaryWriter(f'logs/real')

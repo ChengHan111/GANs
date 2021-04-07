@@ -1,4 +1,4 @@
-'''Training for DCGAN on MNIST dataset with Discriminator and Generator imported from model.py'''
+'''Training for WGAN on MNIST dataset with Discriminator and Generator imported from model.py'''
 
 import torch
 import torch.nn as nn
@@ -13,10 +13,10 @@ from model import Critic, Generator, initialize_weights
 
 # Hyper-para
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-LEARNING_RATE = 2e-4
-BATCH_SIZE = 128
+LEARNING_RATE = 5e-5
+BATCH_SIZE = 64
 IMAGE_SIZE = 64
-CHANNELS_IMG = 1
+CHANNELS_IMG = 1  # 3 for RGB channels
 Z_DIM = 100 # Noise_dim
 NUM_EPOCHS = 5
 FEATURES_DISC = 64
@@ -46,6 +46,7 @@ initialize_weights(critic)
 # change into RMSprop instead of Adam
 opt_gen = optim.RMSprop(gen.parameters(), lr=LEARNING_RATE)
 opt_critic = optim.RMSprop(critic.parameters(), lr=LEARNING_RATE)
+# we are not applying bce loss here.
 
 fixed_noise = torch.randn((32, Z_DIM, 1, 1)).to(device)
 writer_real = SummaryWriter(f'logs/real')
@@ -59,19 +60,21 @@ for epoch in range(NUM_EPOCHS):
     for batch_idx, (real, _) in enumerate(dataloader):
         real = real.to(device)
         cur_batch_size = real.shape[0]
-
+        # we want to train more on critic
         for _ in range(CRITIC_ITERATIONS):
             noise = torch.randn((cur_batch_size, Z_DIM, 1, 1)).to(device)
             fake = gen(noise)
             critic_real = critic(real).reshape(-1)
             critic_fake = critic(fake).reshape(-1)
+            #
             loss_critic = -(torch.mean(critic_real) - torch.mean(critic_fake))
             critic.zero_grad()
             loss_critic.backward(retain_graph=True)
             opt_critic.step()
 
             for p in critic.parameters():
-                p.data.clamp(-WEIGHT_CLIP, WEIGHT_CLIP)
+                # 将输入input张量每个元素的夹紧到区间 [min,max][min,max]，并返回结果到一个新张量
+                p.data.clamp_(-WEIGHT_CLIP, WEIGHT_CLIP) # clip w still in the range
 
         #Train Generator: min E[critic(gen_fake)]
         output = critic(fake).reshape(-1)

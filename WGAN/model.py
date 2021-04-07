@@ -17,7 +17,7 @@ class Critic(nn.Module):
             self._block(features_d * 4, features_d * 8, 4, 2, 1), # 4 x 4
             nn.Conv2d(features_d * 8, 1, kernel_size=4, stride=2, padding=0), #1 x 1 converge the channel to a single channel to
         #     determine whether it is fake or real
-        #     nn.Sigmoid(),  No sigmoid in the last.
+        #     nn.Sigmoid(),  No sigmoid in the last for WGAN
         )
 
     def _block(self, in_channels, out_channels, kernel_size, stride, padding):
