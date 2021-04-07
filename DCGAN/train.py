@@ -34,7 +34,7 @@ transforms = transforms.Compose(
 )
 
 # dataset = datasets.MNIST(root=r'C:\Users\hanch\PycharmProjects\GAN_origin\dataset', train=True, transform=transforms, download=True)
-dataset = datasets.ImageFolder(root=r'', transform=transforms)
+dataset = datasets.ImageFolder(root=r'...', transform=transforms)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
 disc = Discriminator(CHANNELS_IMG, FEATURES_DISC).to(device)

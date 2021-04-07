@@ -6,6 +6,18 @@ to generate and ususally turns to an unsatisfied result. The reason might be the
 Celeb_dataset has a better result on generating faces. Number of epochs, GAN approach and dataset applied are marked at these result folders.
 ## GAN
 ## DCGAN
+DCGAN's generator and discriminator both apply CNN.
+
+Replace any pooling layers with stride convolutions (discriminator) and fractional-strided convolutions (generator).
+
+Use batchnorm in both the generator and the discriminator.
+
+Remove fully connected hidden layers for deeper architectures.
+
+Use ReLU activation in generator for all layers except for the output, which uses Tanh.
+
+Use LeakyReLU activation in the discriminator for all layers.
+
 ## WGAN
 Training WGANs does not require maintaining a careful balance in training of the discriminator and the generator, and does not require a careful design of the network architecture either.
 In this paper, an example is given to illustrate simple sequences of probability distributions converge under the EM distance(or Wasserstein-1) but do not converge under the other distances
