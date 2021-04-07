@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 class Discriminator(nn.Module):
-    def __init__(self, channels_img, features_d):
+    def __init__(self, channels_img, features_d):  # features_d : The channels that is going to change as we go through the layers of the discriminator
         super(Discriminator, self).__init__()
         self.disc = nn.Sequential(
             # Input : N x channels_img x 64 x 64

@@ -15,11 +15,11 @@ from utils import gradient_penalty
 # Hyper-para
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 LEARNING_RATE = 1e-4
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 IMAGE_SIZE = 64
-CHANNELS_IMG = 1
+CHANNELS_IMG = 3
 Z_DIM = 100 # Noise_dim
-NUM_EPOCHS = 5
+NUM_EPOCHS = 3
 FEATURES_CRITIC = 64
 FEATURES_GEN = 64
 CRITIC_ITERATIONS = 5
@@ -38,7 +38,8 @@ transforms = transforms.Compose(
     ]
 )
 
-dataset = datasets.MNIST(root=r'C:\Users\hanch\PycharmProjects\GAN_origin\dataset', train=True, transform=transforms, download=True)
+# dataset = datasets.MNIST(root=r'C:\Users\Cheng Han\Desktop\GAN\dataset', train=True, transform=transforms, download=False)
+dataset = datasets.ImageFolder(root=r'C:\Users\Cheng Han\Desktop\GAN\celeb_dataset', transform=transforms)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
 critic = Critic(CHANNELS_IMG, FEATURES_CRITIC).to(device)
@@ -48,6 +49,7 @@ initialize_weights(critic)
 opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
 opt_critic = optim.Adam(critic.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
 
+# Tensorboard plotting
 fixed_noise = torch.randn((32, Z_DIM, 1, 1)).to(device)
 writer_real = SummaryWriter(f'logs/real')
 writer_fake = SummaryWriter(f'logs/fake')
@@ -64,7 +66,7 @@ for epoch in range(NUM_EPOCHS):
         # Train Critic: max E[critic(real)] - E[critic(fake)]
         # which is equivalent to minimizing the negative of the above form
         for _ in range(CRITIC_ITERATIONS):
-            noise = torch.randn((cur_batch_size, Z_DIM, 1, 1)).to(device)
+            noise = torch.randn(cur_batch_size, Z_DIM, 1, 1).to(device)
             fake = gen(noise)
             critic_real = critic(real).reshape(-1)
             critic_fake = critic(fake).reshape(-1)
