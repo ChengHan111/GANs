@@ -3,11 +3,13 @@
 import torch
 import torch.nn as nn
 
+# For discriminator, we are input a image and try to distinguish fake or real.
 class Discriminator(nn.Module):
     def __init__(self, channels_img, features_d):  # features_d : The channels that is going to change as we go through the layers of the discriminator
         super(Discriminator, self).__init__()
         self.disc = nn.Sequential(
             # Input : N x channels_img x 64 x 64
+            # In the paper, we have kernel_size as 5, but in source code we have kernel_size as 4
             nn.Conv2d(
             channels_img, features_d, kernel_size=4, stride=2, padding=1
             ), # 32 x 32
@@ -37,6 +39,7 @@ class Discriminator(nn.Module):
     def forward(self,x):
         return self.disc(x)
 
+# For generator, we are putting a z_dim noise and try to generate an comparable image.
 class Generator(nn.Module):
     def __init__(self, z_dim, channels_img, features_g):
         super(Generator, self).__init__()

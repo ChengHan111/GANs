@@ -59,7 +59,7 @@ for epoch in range(NUM_EPOCHS):
         noise = torch.randn((BATCH_SIZE, Z_DIM, 1, 1)).to(device)
         fake = gen(noise)
 
-        ### Train Discriminator: max log(D(x)) + log(1 - D(G(z)))
+        ### Train Discriminator: max log(D(x)) + log(1 - D(G(z))) The discriminator and the generator are trained separately.
         disc_real = disc(real).reshape(-1)
         loss_disc_real = criterion(disc_real, torch.ones_like(disc_real))
         disc_fake = disc(fake.detach()).reshape(-1)

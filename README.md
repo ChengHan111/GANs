@@ -6,8 +6,10 @@ to generate and ususally turns to an unsatisfied result. The reason might be the
 Celeb_dataset has a better result on generating faces. Number of epochs, GAN approach and dataset applied are marked at these result folders.
 ## GAN
 ## DCGAN
-DCGAN's generator and discriminator both apply CNN. **The first layer of the GAN, which takes a uniform noise distribution Z as input, could
- be called fully connected as it is just a matrix multiplication, but the result is reshaped into a 4-dimensional tensor and used as the start of the convolutional stack.**
+DCGAN's generator and discriminator both apply CNN. 
+
+***The first layer of the GAN, which takes a uniform noise distribution Z as input, could
+ be called fully connected as it is just a matrix multiplication, but the result is reshaped into a 4-dimensional tensor and used as the start of the convolutional stack.***
 
 Replace any pooling layers with stride convolutions (discriminator) and fractional-strided convolutions (generator).
 
