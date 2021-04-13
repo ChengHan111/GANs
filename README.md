@@ -46,6 +46,12 @@ meaning that we can generate fake image from specific real image. Generative adv
 conditioned on some extra information y.
 ## Pix2Pix
 Here I train Pix2Pix on Maps dataset and Anime dataset. For Map dataset, I set batchsize=1 with 500 epoches. Since I could not put all the results on Github,
-I make a gif to show the training process. 
+I make a gif to show the training process. The following gif shows the original images.
+
 ![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Origin_Img.gif)
+
+The following gif shows the training process.
+
+![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Result_Img.gif)
+
 
