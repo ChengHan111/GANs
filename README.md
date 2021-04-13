@@ -49,11 +49,11 @@ conditioned on some extra information y.
 Here I train Pix2Pix on Maps dataset and Anime dataset. For Map dataset, I set batchsize=1 with 500 epochs. Since I could not put all the results on Github,
 I make a gif to show the training process. The following gif shows the original images.
 
-![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Origin_Img.gif)
+![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Origin_Img_MAP.gif)
 
 The following gif shows the training process. We can observe that, as we train for more epochs, we are reaching a better result which are close to maps.
 
-![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Result_Img.gif)
+![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Result_Img_MAP.gif)
 
 ### 2 Evaluate on pretrained model on Map dataset
 
