@@ -1,6 +1,6 @@
 # GANs
 This is a brief go-through on some GANs. Some trained results are shown in these folders.
-Three datasets are applied in these approaches: celeb_dataset, MNIST dataset and animeface dataset.
+Three datasets are applied in these approaches: celeb_dataset, MNIST dataset, maps dataset, anime dataset and animeface dataset.
 celeb_dataset and animeface dataset are for fake face generation. During the experiments, I found that animeface talks more epochs 
 to generate and ususally turns to an unsatisfied result. The reason might be the colorful background fools the generator when generating fake images.
 Celeb_dataset has a better result on generating faces. Number of epochs, GAN approach and dataset applied are marked at these result folders.
@@ -45,3 +45,7 @@ From the result of conditional WGAN_GP, we can see that every sample on fake and
 meaning that we can generate fake image from specific real image. Generative adversarial nets can be extended to a conditional model if both the generator and discriminator are 
 conditioned on some extra information y.
 ## Pix2Pix
+Here I train Pix2Pix on Maps dataset and Anime dataset. For Map dataset, I set batchsize=1 with 500 epoches. Since I could not put all the results on Github,
+I make a gif to show the training process. 
+![](Pix2Pix/train_map_batchsize=1_epoch_500_result/Origin_Img.gif)
+
