@@ -1,8 +1,10 @@
-from PIL import Image
 import numpy as np
-import os
-from torch.utils.data import Dataset
 import config
+import os
+from PIL import Image
+from torch.utils.data import Dataset, DataLoader
+from torchvision.utils import save_image
+
 
 class MapDataset(Dataset):
     def __init__(self, root_dir):
@@ -17,13 +19,28 @@ class MapDataset(Dataset):
         img_file = self.list_files[index]
         img_path = os.path.join(self.root_dir, img_file)
         image = np.array(Image.open(img_path))
-        input_image = image[:, :600, :] #600 x 600
+        # input_image = image[:, :600, :] #600 x 600
+        # target_image = image[:, 600:, :]
+        input_image = image[:, :600, :]
         target_image = image[:, 600:, :]
 
-        augmentation = config.both_transform(image=input_image, image0=target_image)
-        input_image, target_image = augmentation["image"], augmentation["image"]
+        augmentations = config.both_transform(image=input_image, image0=target_image)
+        input_image = augmentations["image"]
+        target_image = augmentations["image0"]
 
         input_image = config.transform_only_input(image=input_image)["image"]
-        target_image = config.transform_only_input(image=target_image)["image"]
+        target_image = config.transform_only_mask(image=target_image)["image"]
 
         return input_image, target_image
+
+
+if __name__ == "__main__":
+    dataset = MapDataset("data/train/")
+    loader = DataLoader(dataset, batch_size=5)
+    for x, y in loader:
+        print(x.shape)
+        save_image(x, "x.png")
+        save_image(y, "y.png")
+        import sys
+
+        sys.exit()
