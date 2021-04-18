@@ -89,7 +89,7 @@ def test():
     gen = Generator(z_dim, in_channels, 8)
     initialize_weights(gen)
     z = torch.randn((N, z_dim, 1, 1))
-    assert gen(z).shape == (N, in_channels, H, W)
+    assert gen(z).shape == (N, in_channels, H, W) # generator output == (8, 3, 64, 64)
     print('success')
 
 test()
