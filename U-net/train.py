@@ -96,7 +96,7 @@ def main():
     if LOAD_MODEL:
         load_checkpoint(torch.load('my_checkpoint.pth.tar'), model)
         # check_accuracy(val_loader, model, device=DEVICE)
-    
+
     scaler = torch.cuda.amp.GradScaler()
     for epoch in range(NUM_EPOCHS):
         train_fn(train_loader, model, optimizer, loss_fn, scaler)
