@@ -5,4 +5,4 @@ It is applied for semantic segmentation, an encoding-decoding process.
 The encoding part mainly solve the problem of 'what': we loss spatial info through this step. In order to maintain the spatial info, we are applying the encoding process, solving the problem of 'where'. 
 
 Notice that in the original paper, the skip_connections use crop to match the size. In this approach, we are applying resize to do this. There are some small changes as well on this implementation and this implementation is applied of 2-class segmentation.
-![](U-Net/u-net-architecture.png)  
+![](U-Net-architecture/u-net-architecture.png)  
